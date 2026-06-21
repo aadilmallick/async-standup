@@ -85,12 +85,15 @@ pnpm seed
 ## Drizzle migrations
 
 ```bash
-pnpm db:generate   # regenerate SQL after editing src/db/schema.ts
-pnpm db:migrate    # apply migrations (needs DATABASE_URL)
-pnpm db:studio     # browse data
+pnpm db:generate     # regenerate SQL after editing src/db/schema.ts
+pnpm db:migrate      # apply migrations via drizzle-kit (websocket driver)
+pnpm db:migrate:http # apply migrations via Neon HTTP driver (fetch-based)
+pnpm db:studio       # browse data
 ```
 
-The committed migration lives in `drizzle/`.
+The committed migration lives in `drizzle/`. Use `db:migrate:http`
+(`scripts/migrate.ts`) in environments where the websocket driver that
+`drizzle-kit migrate` uses is unavailable.
 
 ## Configure Clerk
 
@@ -207,6 +210,11 @@ QStash recurring schedule (cron, tz)
 - `next/font` (Geist) is fetched at build time, so the first build needs network
   access.
 - No automated tests in this MVP.
+- If you run inside a restricted-egress environment (e.g. Claude Code on the
+  web with a curated network policy), allowlist the Neon, Clerk, and Upstash
+  hosts — otherwise outbound DB/auth/QStash calls return
+  `403 Host not in allowlist`. Local development on your own machine is
+  unaffected.
 
 ## Project structure
 
